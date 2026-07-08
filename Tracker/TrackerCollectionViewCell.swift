@@ -35,13 +35,14 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        nil
     }
     
     private let cardView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemGreen   // потом заменим на цвет трекера
+        view.backgroundColor = .systemGreen
         view.layer.cornerRadius = 16
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -121,11 +122,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     
     private func updateDaysLabel() {
 
-        if completedDays == 1 {
-            daysLabel.text = "\(completedDays) день"
-        } else {
-            daysLabel.text = "\(completedDays) дней"
-        }
+        daysLabel.text = "\(completedDays) \(completedDays == 1 ? "день" : "дней")"
     }
     
     private var isCompleted = false

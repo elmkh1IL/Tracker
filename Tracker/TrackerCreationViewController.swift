@@ -7,6 +7,11 @@ protocol TrackerCreationViewControllerDelegate: AnyObject {
 
 final class TrackerCreationViewController: UIViewController, ScheduleViewControllerDelegate {
 
+    private var scheduleTitleCenterConstraint: NSLayoutConstraint!
+    private var scheduleTitleTopConstraint: NSLayoutConstraint!
+    private var categoryTitleCenterConstraint: NSLayoutConstraint!
+    private var categoryTitleTopConstraint: NSLayoutConstraint!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -15,6 +20,14 @@ final class TrackerCreationViewController: UIViewController, ScheduleViewControl
         
         setupViews()
         setupConstraints()
+        
+        updateCreateButtonState()
+        
+        nameTextField.addTarget(
+            self,
+            action: #selector(nameTextFieldDidChange),
+            for: .editingChanged
+        )
         
         cancelButton.addTarget(
             self,
@@ -35,6 +48,7 @@ final class TrackerCreationViewController: UIViewController, ScheduleViewControl
         )
         
     }
+    
     private var selectedWeekDays: Set<WeekDay> = []
     weak var delegate: TrackerCreationViewControllerDelegate?
     
@@ -54,6 +68,9 @@ final class TrackerCreationViewController: UIViewController, ScheduleViewControl
 
         textField.backgroundColor = .systemGray6
         textField.layer.cornerRadius = 16
+        
+        textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
+        textField.leftViewMode = .always
 
         textField.translatesAutoresizingMaskIntoConstraints = false
 
@@ -105,6 +122,7 @@ final class TrackerCreationViewController: UIViewController, ScheduleViewControl
 
         label.font = .systemFont(ofSize: 17)
         label.textColor = .systemGray
+        label.isHidden = true
         label.translatesAutoresizingMaskIntoConstraints = false
 
         return label
@@ -133,6 +151,7 @@ final class TrackerCreationViewController: UIViewController, ScheduleViewControl
         let label = UILabel()
         label.font = .systemFont(ofSize: 17)
         label.textColor = .systemGray
+        label.isHidden = true
         label.translatesAutoresizingMaskIntoConstraints = false
 
         return label
@@ -233,10 +252,16 @@ final class TrackerCreationViewController: UIViewController, ScheduleViewControl
         guard !selectedWeekDays.isEmpty else {
             scheduleSubtitleLabel.isHidden = true
             scheduleSubtitleLabel.text = nil
+            
+            scheduleTitleTopConstraint.isActive = false
+            scheduleTitleCenterConstraint.isActive = true
+
             return
         }
         
         scheduleSubtitleLabel.isHidden = false
+        scheduleTitleCenterConstraint.isActive = false
+        scheduleTitleTopConstraint.isActive = true
         
         if selectedWeekDays.count == WeekDay.allCases.count {
             scheduleSubtitleLabel.text = "Каждый день"
@@ -250,6 +275,25 @@ final class TrackerCreationViewController: UIViewController, ScheduleViewControl
         let titles = sortedDays.map { $0.shortTitle }
         
         scheduleSubtitleLabel.text = titles.joined(separator: ", ")
+    }
+    
+    private func updateCategorySubtitle() {
+
+        guard let text = categorySubtitleLabel.text,
+              !text.isEmpty else {
+
+            categorySubtitleLabel.isHidden = true
+
+            categoryTitleTopConstraint.isActive = false
+            categoryTitleCenterConstraint.isActive = true
+
+            return
+        }
+
+        categorySubtitleLabel.isHidden = false
+
+        categoryTitleCenterConstraint.isActive = false
+        categoryTitleTopConstraint.isActive = true
     }
     
     private func setupViews() {
@@ -274,6 +318,16 @@ final class TrackerCreationViewController: UIViewController, ScheduleViewControl
     }
     
     private func setupConstraints() {
+        
+        scheduleTitleCenterConstraint = scheduleTitleLabel.centerYAnchor.constraint(equalTo: scheduleButton.centerYAnchor)
+        scheduleTitleTopConstraint = scheduleTitleLabel.topAnchor.constraint(equalTo: separatorView.bottomAnchor, constant: 16)
+        scheduleTitleCenterConstraint.isActive = true
+
+        categoryTitleCenterConstraint = categoryTitleLabel.centerYAnchor.constraint(equalTo: categoryButton.centerYAnchor)
+        categoryTitleTopConstraint = categoryTitleLabel.topAnchor.constraint(equalTo: optionsView.topAnchor, constant: 16)
+
+        categoryTitleCenterConstraint.isActive = true
+        
         NSLayoutConstraint.activate([
 
             nameTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
@@ -290,12 +344,10 @@ final class TrackerCreationViewController: UIViewController, ScheduleViewControl
             categoryButton.leadingAnchor.constraint(equalTo: optionsView.leadingAnchor),
             categoryButton.trailingAnchor.constraint(equalTo: optionsView.trailingAnchor),
             categoryButton.heightAnchor.constraint(equalToConstant: 75),
-            
-            categoryTitleLabel.leadingAnchor.constraint(equalTo: optionsView.leadingAnchor, constant: 16),
-            categoryTitleLabel.topAnchor.constraint(equalTo: optionsView.topAnchor, constant: 16),
 
             categorySubtitleLabel.leadingAnchor.constraint(equalTo: categoryTitleLabel.leadingAnchor),
             categorySubtitleLabel.topAnchor.constraint(equalTo: categoryTitleLabel.bottomAnchor, constant: 2),
+            categoryTitleLabel.leadingAnchor.constraint(equalTo: optionsView.leadingAnchor, constant: 16),
 
             separatorView.topAnchor.constraint(equalTo: categoryButton.bottomAnchor),
             separatorView.leadingAnchor.constraint(equalTo: optionsView.leadingAnchor, constant: 16),
@@ -308,8 +360,6 @@ final class TrackerCreationViewController: UIViewController, ScheduleViewControl
             scheduleButton.heightAnchor.constraint(equalToConstant: 74),
             
             scheduleTitleLabel.leadingAnchor.constraint(equalTo: optionsView.leadingAnchor, constant: 16),
-            scheduleTitleLabel.topAnchor.constraint(equalTo: separatorView.bottomAnchor, constant: 16),
-
             scheduleSubtitleLabel.leadingAnchor.constraint(equalTo: scheduleTitleLabel.leadingAnchor),
             scheduleSubtitleLabel.topAnchor.constraint(equalTo: scheduleTitleLabel.bottomAnchor, constant: 2),
             
@@ -350,14 +400,33 @@ final class TrackerCreationViewController: UIViewController, ScheduleViewControl
             animated: true
         )
     }
+    
+    @objc
+    private func nameTextFieldDidChange() {
+        updateCreateButtonState()
+    }
+    
+    private func updateCreateButtonState() {
+        let hasName = !(nameTextField.text?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .isEmpty ?? true)
+
+        let hasSchedule = !selectedWeekDays.isEmpty
+
+        let isEnabled = hasName && hasSchedule
+
+        createButton.isEnabled = isEnabled
+        createButton.backgroundColor = isEnabled ? .black : .systemGray3
+    }
 }
 
 extension TrackerCreationViewController {
-
+    
     func didSelectWeekDays(_ weekDays: Set<WeekDay>) {
         selectedWeekDays = weekDays
-
-    updateScheduleSubtitle()
-
+        
+        updateScheduleSubtitle()
+        updateCreateButtonState()
+        
     }
 }

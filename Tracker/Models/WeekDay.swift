@@ -10,37 +10,37 @@ enum WeekDay: Int, CaseIterable {
     var title: String {
         switch self {
         case .monday:
-            return "Понедельник"
+            "Понедельник"
         case .tuesday:
-            return "Вторник"
+            "Вторник"
         case .wednesday:
-            return "Среда"
+            "Среда"
         case .thursday:
-            return "Четверг"
+            "Четверг"
         case .friday:
-            return "Пятница"
+            "Пятница"
         case .saturday:
-            return "Суббота"
+            "Суббота"
         case .sunday:
-            return "Воскресенье"
+            "Воскресенье"
         }
     }
     var shortTitle: String {
         switch self {
         case .monday:
-            return "Пн"
+            "Пн"
         case .tuesday:
-            return "Вт"
+            "Вт"
         case .wednesday:
-            return "Ср"
+            "Ср"
         case .thursday:
-            return "Чт"
+            "Чт"
         case .friday:
-            return "Пт"
+            "Пт"
         case .saturday:
-            return "Сб"
+            "Сб"
         case .sunday:
-            return "Вс"
+            "Вс"
         }
     }
 }

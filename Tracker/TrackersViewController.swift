@@ -122,7 +122,7 @@ final class TrackersViewController: UIViewController, UICollectionViewDataSource
     
     private let placeholderImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "placeholder") // заменить systemName: "star"
+        imageView.image = UIImage(resource: .placeholderStar)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
@@ -374,29 +374,29 @@ extension TrackersViewController: TrackerCollectionViewCellDelegate {
 }
 
 extension TrackersViewController: UISearchBarDelegate {
-
+    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-
+        
         self.searchText = searchText
-
+        
         collectionView.reloadData()
-
+        
         updatePlaceholder()
     }
 }
 
 extension TrackersViewController: TrackerCreationViewControllerDelegate {
-
+    
     func didCreateTracker(_ tracker: Tracker) {
-
-            let category = categories[0]
-
-            let updatedCategory = TrackerCategory( title: category.title, trackers: category.trackers + [tracker]
-            )
-
-            categories[0] = updatedCategory
-
-            collectionView.reloadData()
-            updatePlaceholder()
-        }
+        
+        let category = categories[0]
+        
+        let updatedCategory = TrackerCategory( title: category.title, trackers: category.trackers + [tracker]
+        )
+        
+        categories[0] = updatedCategory
+        
+        collectionView.reloadData()
+        updatePlaceholder()
+    }
 }
