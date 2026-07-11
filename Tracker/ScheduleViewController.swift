@@ -8,15 +8,38 @@ final class ScheduleViewController: UIViewController {
 
     weak var delegate: ScheduleViewControllerDelegate?
     
-    private let tableView: UITableView = {
+    /*private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        
+        tableView.backgroundColor = .systemGray6
+        
         tableView.separatorInset = UIEdgeInsets(
             top: 0,
             left: 16,
             bottom: 0,
             right: 16
         )
+        return tableView
+    }()*/
+    
+    private let tableView: UITableView = {
+        let tableView = UITableView(frame: .zero, style: .plain)
+
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+
+        tableView.backgroundColor = .clear
+
+        tableView.separatorInset = UIEdgeInsets(
+            top: 0,
+            left: 16,
+            bottom: 0,
+            right: 16
+        )
+
+        tableView.layer.cornerRadius = 16
+        tableView.clipsToBounds = true
+
         return tableView
     }()
     
@@ -44,6 +67,8 @@ final class ScheduleViewController: UIViewController {
         view.backgroundColor = .systemBackground
         navigationItem.title = "Расписание"
         tableView.delegate = self
+        navigationItem.hidesBackButton = true
+        tableView.separatorStyle = .none
         setupViews()
         setupConstraints()
         
@@ -56,11 +81,14 @@ final class ScheduleViewController: UIViewController {
 
     private func setupViews() {
 
-        view.addSubview(tableView)
+        view.addSubview(containerView)
+
+        containerView.addSubview(tableView)
         view.addSubview(doneButton)
         
         tableView.dataSource = self
         tableView.backgroundColor = .clear
+        tableView.sectionHeaderTopPadding = 0
         tableView.showsVerticalScrollIndicator = false
         
         tableView.register(
@@ -69,9 +97,20 @@ final class ScheduleViewController: UIViewController {
         )
     }
     
-    private func setupConstraints() {
+    private let containerView: UIView = {
+        let view = UIView()
 
-        NSLayoutConstraint.activate([
+        view.backgroundColor = .systemGray6
+        view.layer.cornerRadius = 16
+
+        view.translatesAutoresizingMaskIntoConstraints = false
+
+        return view
+    }()
+    
+    /*private func setupConstraints() {
+
+        /*NSLayoutConstraint.activate([
 
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
 
@@ -88,6 +127,146 @@ final class ScheduleViewController: UIViewController {
             doneButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
 
             doneButton.heightAnchor.constraint(equalToConstant: 60)
+        ])*/
+        
+        NSLayoutConstraint.activate([
+
+            /*tableView.topAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.topAnchor,
+                constant: 16
+            ),
+
+            tableView.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor,
+                constant: 16
+            ),
+
+            tableView.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor,
+                constant: -16
+            ),
+
+            tableView.bottomAnchor.constraint(
+                equalTo: doneButton.topAnchor,
+                constant: -24
+            ),
+
+            doneButton.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor,
+                constant: 20
+            ),
+
+            doneButton.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor,
+                constant: -20
+            ),
+
+            doneButton.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+                constant: -16
+            ),
+
+            doneButton.heightAnchor.constraint(
+                equalToConstant: 60
+            )
+        ])*/
+        
+        containerView.topAnchor.constraint(
+            equalTo: view.safeAreaLayoutGuide.topAnchor,
+            constant: 24
+        ),
+
+        containerView.leadingAnchor.constraint(
+            equalTo: view.leadingAnchor,
+            constant: 16
+        ),
+
+        containerView.trailingAnchor.constraint(
+            equalTo: view.trailingAnchor,
+            constant: -16
+        ),
+
+        containerView.bottomAnchor.constraint(
+            equalTo: doneButton.topAnchor,
+            constant: -24
+        ),
+
+        tableView.topAnchor.constraint(
+            equalTo: containerView.topAnchor
+        ),
+
+        tableView.leadingAnchor.constraint(
+            equalTo: containerView.leadingAnchor
+        ),
+
+        tableView.trailingAnchor.constraint(
+            equalTo: containerView.trailingAnchor
+        ),
+
+        tableView.bottomAnchor.constraint(
+            equalTo: containerView.bottomAnchor
+            ),
+        ])
+    }*/
+    
+    
+    private func setupConstraints() {
+
+        NSLayoutConstraint.activate([
+
+            containerView.topAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.topAnchor,
+                constant: 24
+            ),
+
+            containerView.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor,
+                constant: 16
+            ),
+
+            containerView.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor,
+                constant: -16
+            ),
+
+            containerView.heightAnchor.constraint(
+                equalToConstant: 75 * CGFloat(weekDays.count)
+            ),
+
+            tableView.topAnchor.constraint(
+                equalTo: containerView.topAnchor
+            ),
+
+            tableView.leadingAnchor.constraint(
+                equalTo: containerView.leadingAnchor
+            ),
+
+            tableView.trailingAnchor.constraint(
+                equalTo: containerView.trailingAnchor
+            ),
+
+            tableView.bottomAnchor.constraint(
+                equalTo: containerView.bottomAnchor
+            ),
+
+            doneButton.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor,
+                constant: 20
+            ),
+
+            doneButton.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor,
+                constant: -20
+            ),
+
+            doneButton.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+                constant: -16
+            ),
+
+            doneButton.heightAnchor.constraint(
+                equalToConstant: 60
+            )
         ])
     }
     

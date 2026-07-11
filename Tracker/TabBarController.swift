@@ -21,6 +21,20 @@ final class TabBarController: UITabBarController {
                             UINavigationController(rootViewController: statisticsVC)
         ]
         
+        let appearance = UITabBarAppearance()
+
+        appearance.configureWithDefaultBackground()
+
+        appearance.backgroundColor = .systemBackground
+
+        appearance.shadowColor = .systemGray4
+
+        tabBar.standardAppearance = appearance
+
+        if #available(iOS 15.0, *) {
+            tabBar.scrollEdgeAppearance = appearance
+        }
+        
     }
     
 

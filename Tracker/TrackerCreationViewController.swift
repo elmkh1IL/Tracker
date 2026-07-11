@@ -521,7 +521,10 @@ extension TrackerCreationViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath
         ) {
 
-            switch Section(rawValue: indexPath.section)! {
+        guard let section = Section(rawValue: indexPath.section) else {
+            return
+        }
+            switch section {
 
             case .emoji:
                 selectedEmoji = emojis[indexPath.item]
@@ -572,7 +575,10 @@ extension TrackerCreationViewController: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 
-        switch Section(rawValue: section)! {
+        guard let section = Section(rawValue: section) else {
+            return 0
+        }
+        switch section {
         case .emoji:
             return emojis.count
 
@@ -581,10 +587,7 @@ extension TrackerCreationViewController: UICollectionViewDataSource {
         }
     }
 
-    func collectionView(
-        _ collectionView: UICollectionView,
-        cellForItemAt indexPath: IndexPath
-    ) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
         guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: EmojiColorCollectionViewCell.reuseIdentifier,
@@ -593,7 +596,11 @@ extension TrackerCreationViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
 
-        switch Section(rawValue: indexPath.section)! {
+        guard let section = Section(rawValue: indexPath.section) else {
+            return UICollectionViewCell()
+        }
+        
+        switch section {
 
         case .emoji:
 
@@ -615,11 +622,7 @@ extension TrackerCreationViewController: UICollectionViewDataSource {
         return cell
     }
     
-    func collectionView(
-        _ collectionView: UICollectionView,
-        viewForSupplementaryElementOfKind kind: String,
-        at indexPath: IndexPath
-    ) -> UICollectionReusableView {
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
 
         guard let header = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,

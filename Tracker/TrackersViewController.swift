@@ -117,6 +117,8 @@ final class TrackersViewController: UIViewController, UICollectionViewDataSource
     private let searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.placeholder = "Поиск"
+        searchBar.searchTextField.backgroundColor = .systemGray6
+        searchBar.backgroundImage = UIImage()
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         return searchBar
     }()
@@ -303,7 +305,18 @@ final class TrackersViewController: UIViewController, UICollectionViewDataSource
 extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 
-        return CGSize(width: 167, height: 148)
+        
+        let spacing: CGFloat = 9
+        let sideInset: CGFloat = 16
+
+        let width = (collectionView.bounds.width - sideInset * 2 - spacing) / 2
+
+        return CGSize(
+            width: width,
+            height: 148
+        )
+        
+        //return CGSize(width: 167, height: 148)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
