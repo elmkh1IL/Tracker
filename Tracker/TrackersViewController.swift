@@ -30,14 +30,14 @@ final class TrackersViewController: UIViewController, UICollectionViewDataSource
         cell.delegate = self
         return cell
     }
-    
-    private var categories: [TrackerCategory] = []
 
     private var completedTrackers: [TrackerRecord] = []
 
     private var currentDate = Date()
     
     private var searchText = ""
+    
+    private let trackerStore = TrackerStore(context: CoreDataStack.shared.context)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,8 +47,9 @@ final class TrackersViewController: UIViewController, UICollectionViewDataSource
         setupViews()
         setupConstraints()
         configureCollectionView()
+        trackerStore.delegate = self
         searchBar.delegate = self
-        createTestData()
+        //createTestData()
         updatePlaceholder()
         collectionView.reloadData()
     }
@@ -75,7 +76,7 @@ final class TrackersViewController: UIViewController, UICollectionViewDataSource
     }
     
     private var visibleCategories: [TrackerCategory] {
-        categories.compactMap { category in
+        trackerStore.trackerCategories.compactMap { category in
             
             let trackers = category.trackers.filter { tracker in
                 
@@ -116,6 +117,8 @@ final class TrackersViewController: UIViewController, UICollectionViewDataSource
     private let searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.placeholder = "Поиск"
+        searchBar.searchTextField.backgroundColor = .systemGray6
+        searchBar.backgroundImage = UIImage()
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         return searchBar
     }()
@@ -230,7 +233,7 @@ final class TrackersViewController: UIViewController, UICollectionViewDataSource
         )
     }
     
-    private func createTestData() {
+    /*private func createTestData() {
 
         let tracker1 = Tracker(
             id: UUID(),
@@ -266,7 +269,7 @@ final class TrackersViewController: UIViewController, UICollectionViewDataSource
                 trackers: [tracker3]
             )
         ]
-    }
+    }*/
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return visibleCategories.count
@@ -302,7 +305,18 @@ final class TrackersViewController: UIViewController, UICollectionViewDataSource
 extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 
-        return CGSize(width: 167, height: 148)
+        
+        let spacing: CGFloat = 9
+        let sideInset: CGFloat = 16
+
+        let width = (collectionView.bounds.width - sideInset * 2 - spacing) / 2
+
+        return CGSize(
+            width: width,
+            height: 148
+        )
+        
+        //return CGSize(width: 167, height: 148)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
@@ -388,14 +402,25 @@ extension TrackersViewController: UISearchBarDelegate {
 extension TrackersViewController: TrackerCreationViewControllerDelegate {
     
     func didCreateTracker(_ tracker: Tracker) {
-        
-        let category = categories[0]
-        
-        let updatedCategory = TrackerCategory( title: category.title, trackers: category.trackers + [tracker]
-        )
-        
-        categories[0] = updatedCategory
-        
+
+        do {
+
+            try trackerStore.addTracker(
+                tracker,
+                categoryTitle: "Моя категория"
+            )
+
+        } catch {
+
+            print(error)
+        }
+    }
+}
+
+extension TrackersViewController: TrackerStoreDelegate {
+
+    func didUpdate() {
+
         collectionView.reloadData()
         updatePlaceholder()
     }
