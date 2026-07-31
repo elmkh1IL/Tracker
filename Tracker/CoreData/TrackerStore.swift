@@ -16,45 +16,37 @@ final class TrackerStore: NSObject {
         NSFetchedResultsController<TrackerCoreData>
     
     var trackers: [Tracker] {
-
+        fetchedResultsController.fetchedObjects?
+            .compactMap { makeTracker(from: $0) } ?? []
+    }
+    
+    var trackerCategories: [TrackerCategory] {
         guard let objects = fetchedResultsController.fetchedObjects else {
             return []
         }
 
-        return objects.compactMap { object in
+        var groupedTrackers: [String: [Tracker]] = [:]
 
+        for object in objects {
             guard
-                let id = object.id,
-                let name = object.name,
-                let emoji = object.emoji,
-                let color = object.color as? UIColor,
-                let scheduleArray = object.schedule as? [Int]
+                let tracker = makeTracker(from: object),
+                let categoryTitle = object.category?.title,
+                !categoryTitle.isEmpty
             else {
-                return nil
+                continue
             }
 
-            let schedule = scheduleArray.compactMap {
-                WeekDay(rawValue: $0)
-            }
-
-            return Tracker(
-                id: id,
-                name: name,
-                color: color,
-                emoji: emoji,
-                schedule: schedule
-            )
+            groupedTrackers[categoryTitle, default: []].append(tracker)
         }
-    }
 
-    var trackerCategories: [TrackerCategory] {
-
-        let category = TrackerCategory(
-            title: "Моя категория",
-            trackers: trackers
-        )
-
-        return trackers.isEmpty ? [] : [category]
+        return groupedTrackers.keys
+            .sorted()
+            .map { title in
+                TrackerCategory(
+                    title: title,
+                    trackers: groupedTrackers[title] ?? []
+                )
+            }
     }
     
     init(context: NSManagedObjectContext) {
@@ -102,6 +94,7 @@ final class TrackerStore: NSObject {
 
         let categoryRequest = TrackerCategoryCoreData.fetchRequest()
 
+        categoryRequest.fetchLimit = 1
         categoryRequest.predicate = NSPredicate(
             format: "title == %@",
             categoryTitle
@@ -122,6 +115,32 @@ final class TrackerStore: NSObject {
         trackerCoreData.category = category
 
         try context.save()
+    }
+    
+    private func makeTracker(
+        from object: TrackerCoreData
+    ) -> Tracker? {
+        guard
+            let id = object.id,
+            let name = object.name,
+            let emoji = object.emoji,
+            let color = object.color as? UIColor,
+            let scheduleArray = object.schedule as? [Int]
+        else {
+            return nil
+        }
+
+        let schedule = scheduleArray.compactMap {
+            WeekDay(rawValue: $0)
+        }
+
+        return Tracker(
+            id: id,
+            name: name,
+            color: color,
+            emoji: emoji,
+            schedule: schedule
+        )
     }
 }
 

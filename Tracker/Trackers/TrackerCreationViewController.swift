@@ -2,7 +2,10 @@ import UIKit
 
 protocol TrackerCreationViewControllerDelegate: AnyObject {
 
-    func didCreateTracker(_ tracker: Tracker)
+    func didCreateTracker(
+            _ tracker: Tracker,
+            category: TrackerCategory
+        )
 }
 
 final class TrackerCreationViewController: UIViewController {
@@ -26,12 +29,14 @@ final class TrackerCreationViewController: UIViewController {
     private var scheduleTitleTopConstraint: NSLayoutConstraint!
     private var categoryTitleCenterConstraint: NSLayoutConstraint!
     private var categoryTitleTopConstraint: NSLayoutConstraint!
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         configureAppearance()
         configureNavigationBar()
+        navigationItem.backButtonDisplayMode = .minimal
         
         setupViews()
         setupConstraints()
@@ -56,15 +61,22 @@ final class TrackerCreationViewController: UIViewController {
             for: .touchUpInside
         )
         
+        categoryButton.addTarget(
+            self,
+            action: #selector(categoryButtonTapped),
+            for: .touchUpInside
+        )
+        
         createButton.addTarget(
             self,
             action: #selector(createButtonTapped),
             for: .touchUpInside
         )
-        
+    
     }
     
     private var selectedWeekDays: Set<WeekDay> = []
+    private var selectedCategory: TrackerCategory?
     
     private var selectedEmoji: String?
     private var selectedColor: UIColor?
@@ -98,6 +110,10 @@ final class TrackerCreationViewController: UIViewController {
     ]
     
     weak var delegate: TrackerCreationViewControllerDelegate?
+    
+    private lazy var categoryStore = TrackerCategoryStore(
+        context: CoreDataStack.shared.context
+    )
     
     private func configureAppearance() {
         view.backgroundColor = .systemBackground
@@ -273,6 +289,7 @@ final class TrackerCreationViewController: UIViewController {
         }
         
         guard
+            let category = selectedCategory,
             let emoji = selectedEmoji,
             let color = selectedColor
         else {
@@ -287,7 +304,7 @@ final class TrackerCreationViewController: UIViewController {
             schedule: Array(selectedWeekDays)
         )
 
-        delegate?.didCreateTracker(tracker)
+        delegate?.didCreateTracker(tracker, category: category)
 
         dismiss(animated: true)
     }
@@ -329,25 +346,6 @@ final class TrackerCreationViewController: UIViewController {
         let titles = sortedDays.map { $0.shortTitle }
         
         scheduleSubtitleLabel.text = titles.joined(separator: ", ")
-    }
-    
-    private func updateCategorySubtitle() {
-
-        guard let text = categorySubtitleLabel.text,
-              !text.isEmpty else {
-
-            categorySubtitleLabel.isHidden = true
-
-            categoryTitleTopConstraint.isActive = false
-            categoryTitleCenterConstraint.isActive = true
-
-            return
-        }
-
-        categorySubtitleLabel.isHidden = false
-
-        categoryTitleCenterConstraint.isActive = false
-        categoryTitleTopConstraint.isActive = true
     }
     
     private func setupViews() {
@@ -491,6 +489,27 @@ final class TrackerCreationViewController: UIViewController {
     }
     
     @objc
+    private func categoryButtonTapped() {
+
+        let viewModel = TrackerCategoryViewModel(
+                store: categoryStore,
+                selectedCategory: selectedCategory
+            )
+
+            let viewController = TrackerCategoryViewController(
+                store: categoryStore,
+                viewModel: viewModel
+            )
+
+            viewController.delegate = self
+
+            navigationController?.pushViewController(
+                viewController,
+                animated: true
+            )
+        }
+    
+    @objc
     private func nameTextFieldDidChange() {
         updateCreateButtonState()
     }
@@ -500,20 +519,40 @@ final class TrackerCreationViewController: UIViewController {
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .isEmpty ?? true)
 
+        let hasCategory = selectedCategory != nil
         let hasSchedule = !selectedWeekDays.isEmpty
         let hasEmoji = selectedEmoji != nil
         let hasColor = selectedColor != nil
-
+        
         let isEnabled =
-            hasName &&
-            hasSchedule &&
-            hasEmoji &&
-            hasColor
-
+        hasName &&
+        hasCategory &&
+        hasSchedule &&
+        hasEmoji &&
+        hasColor
+        
         createButton.isEnabled = isEnabled
         createButton.backgroundColor = isEnabled ? .black : .systemGray3
     }
     
+    private func updateCategorySubtitle() {
+
+        guard let text = categorySubtitleLabel.text,
+              !text.isEmpty else {
+
+            categorySubtitleLabel.isHidden = true
+
+            categoryTitleTopConstraint.isActive = false
+            categoryTitleCenterConstraint.isActive = true
+
+            return
+        }
+
+        categorySubtitleLabel.isHidden = false
+
+        categoryTitleCenterConstraint.isActive = false
+        categoryTitleTopConstraint.isActive = true
+    }
 }
 
 extension TrackerCreationViewController: UICollectionViewDelegate {
@@ -644,6 +683,19 @@ extension TrackerCreationViewController: ScheduleViewControllerDelegate {
         selectedWeekDays = weekDays
 
         updateScheduleSubtitle()
+        updateCreateButtonState()
+    }
+}
+
+extension TrackerCreationViewController: TrackerCategoryViewControllerDelegate {
+
+    func didSelectCategory(_ category: TrackerCategory) {
+
+        selectedCategory = category
+        
+        categorySubtitleLabel.text = category.title
+
+        updateCategorySubtitle()
         updateCreateButtonState()
     }
 }

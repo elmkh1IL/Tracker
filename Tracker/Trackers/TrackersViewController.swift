@@ -233,44 +233,6 @@ final class TrackersViewController: UIViewController, UICollectionViewDataSource
         )
     }
     
-    /*private func createTestData() {
-
-        let tracker1 = Tracker(
-            id: UUID(),
-            name: "Поливать растения",
-            color: .systemGreen,
-            emoji: "❤️",
-            schedule: [.monday]
-        )
-
-        let tracker2 = Tracker(
-            id: UUID(),
-            name: "Кормить кота",
-            color: .systemOrange,
-            emoji: "🐱",
-            schedule: [.monday]
-        )
-
-        let tracker3 = Tracker(
-            id: UUID(),
-            name: "Бегать",
-            color: .systemBlue,
-            emoji: "🏃‍♀️",
-            schedule: WeekDay.allCases
-        )
-        
-        categories = [
-            TrackerCategory(
-                title: "Домашний уют",
-                trackers: [tracker1, tracker2]
-            ),
-            TrackerCategory(
-                title: "Здоровье",
-                trackers: [tracker3]
-            )
-        ]
-    }*/
-    
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return visibleCategories.count
     }
@@ -401,20 +363,19 @@ extension TrackersViewController: UISearchBarDelegate {
 
 extension TrackersViewController: TrackerCreationViewControllerDelegate {
     
-    func didCreateTracker(_ tracker: Tracker) {
-
-        do {
-
-            try trackerStore.addTracker(
-                tracker,
-                categoryTitle: "Моя категория"
-            )
-
-        } catch {
-
-            print(error)
+    func didCreateTracker(
+            _ tracker: Tracker,
+            category: TrackerCategory
+        ) {
+            do {
+                try trackerStore.addTracker(
+                    tracker,
+                    categoryTitle: category.title
+                )
+            } catch {
+                print("Не удалось сохранить трекер: \(error)")
+            }
         }
-    }
 }
 
 extension TrackersViewController: TrackerStoreDelegate {
