@@ -59,8 +59,9 @@ final class CategoryTableViewCell: UITableViewCell {
         setupConstraints()
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        nil
     }
     
     private let separatorView: UIView = {
@@ -78,7 +79,7 @@ final class CategoryTableViewCell: UITableViewCell {
 }
 
 private extension CategoryTableViewCell {
-
+    
     func configureCell() {
         contentView.backgroundColor = .systemGray6
         selectionStyle = .none
@@ -89,13 +90,13 @@ private extension CategoryTableViewCell {
             bottom: 0,
             right: 16
         )
-
+        
         preservesSuperviewLayoutMargins = false
         layoutMargins = .zero
     }
-
+    
     func setupViews() {
-
+        
         contentView.addSubview(titleLabel)
         contentView.addSubview(checkmarkImageView)
         contentView.addSubview(separatorView)
@@ -104,14 +105,17 @@ private extension CategoryTableViewCell {
     func setupConstraints() {
         
         NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,
-                                                constant: 16), titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor), checkmarkImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16), checkmarkImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            
+            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,constant: 16),
+            titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            
+            checkmarkImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            checkmarkImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            
             separatorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             separatorView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             separatorView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             separatorView.heightAnchor.constraint(equalToConstant: 1)
         ])
     }
-    
 }
-

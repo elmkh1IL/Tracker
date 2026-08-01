@@ -1,4 +1,5 @@
 import CoreData
+import OSLog
 
 protocol TrackerCategoryStoreDelegate: AnyObject {
 
@@ -6,6 +7,10 @@ protocol TrackerCategoryStoreDelegate: AnyObject {
 }
 
 final class TrackerCategoryStore: NSObject {
+    
+    private let logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier ?? "Tracker",
+        category: "TrackerCategoryStore")
 
     weak var delegate: TrackerCategoryStoreDelegate?
 
@@ -43,7 +48,7 @@ final class TrackerCategoryStore: NSObject {
         do {
             try fetchedResultsController.performFetch()
         } catch {
-            print(error)
+            logger.error("Ошибка: \(error.localizedDescription)")
         }
     }
     
@@ -68,7 +73,7 @@ final class TrackerCategoryStore: NSObject {
         do {
             try context.save()
         } catch {
-            print(error)
+            logger.error("Ошибка: \(error.localizedDescription)")
         }
     }
     
@@ -97,7 +102,7 @@ final class TrackerCategoryStore: NSObject {
             category.title = newTitle
             try context.save()
         } catch {
-            print("Не удалось изменить категорию: \(error)")
+            logger.error("Не удалось изменить категорию: \(error)")
         }
     }
     
@@ -119,7 +124,7 @@ final class TrackerCategoryStore: NSObject {
             context.delete(category)
             try context.save()
         } catch {
-            print("Не удалось удалить категорию: \(error)")
+            logger.error("Не удалось удалить категорию: \(error)")
         }
     }
     

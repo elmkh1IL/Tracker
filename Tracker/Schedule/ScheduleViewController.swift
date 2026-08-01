@@ -8,21 +8,6 @@ final class ScheduleViewController: UIViewController {
 
     weak var delegate: ScheduleViewControllerDelegate?
     
-    /*private let tableView: UITableView = {
-        let tableView = UITableView(frame: .zero, style: .insetGrouped)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        
-        tableView.backgroundColor = .systemGray6
-        
-        tableView.separatorInset = UIEdgeInsets(
-            top: 0,
-            left: 16,
-            bottom: 0,
-            right: 16
-        )
-        return tableView
-    }()*/
-    
     private let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
 
@@ -108,165 +93,24 @@ final class ScheduleViewController: UIViewController {
         return view
     }()
     
-    /*private func setupConstraints() {
-
-        /*NSLayoutConstraint.activate([
-
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-
-            tableView.bottomAnchor.constraint(equalTo: doneButton.topAnchor, constant: -24),
-
-            doneButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-
-            doneButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-
-            doneButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-
-            doneButton.heightAnchor.constraint(equalToConstant: 60)
-        ])*/
-        
-        NSLayoutConstraint.activate([
-
-            /*tableView.topAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.topAnchor,
-                constant: 16
-            ),
-
-            tableView.leadingAnchor.constraint(
-                equalTo: view.leadingAnchor,
-                constant: 16
-            ),
-
-            tableView.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor,
-                constant: -16
-            ),
-
-            tableView.bottomAnchor.constraint(
-                equalTo: doneButton.topAnchor,
-                constant: -24
-            ),
-
-            doneButton.leadingAnchor.constraint(
-                equalTo: view.leadingAnchor,
-                constant: 20
-            ),
-
-            doneButton.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor,
-                constant: -20
-            ),
-
-            doneButton.bottomAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                constant: -16
-            ),
-
-            doneButton.heightAnchor.constraint(
-                equalToConstant: 60
-            )
-        ])*/
-        
-        containerView.topAnchor.constraint(
-            equalTo: view.safeAreaLayoutGuide.topAnchor,
-            constant: 24
-        ),
-
-        containerView.leadingAnchor.constraint(
-            equalTo: view.leadingAnchor,
-            constant: 16
-        ),
-
-        containerView.trailingAnchor.constraint(
-            equalTo: view.trailingAnchor,
-            constant: -16
-        ),
-
-        containerView.bottomAnchor.constraint(
-            equalTo: doneButton.topAnchor,
-            constant: -24
-        ),
-
-        tableView.topAnchor.constraint(
-            equalTo: containerView.topAnchor
-        ),
-
-        tableView.leadingAnchor.constraint(
-            equalTo: containerView.leadingAnchor
-        ),
-
-        tableView.trailingAnchor.constraint(
-            equalTo: containerView.trailingAnchor
-        ),
-
-        tableView.bottomAnchor.constraint(
-            equalTo: containerView.bottomAnchor
-            ),
-        ])
-    }*/
-    
-    
     private func setupConstraints() {
 
         NSLayoutConstraint.activate([
-
-            containerView.topAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.topAnchor,
-                constant: 24
-            ),
-
-            containerView.leadingAnchor.constraint(
-                equalTo: view.leadingAnchor,
-                constant: 16
-            ),
-
-            containerView.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor,
-                constant: -16
-            ),
-
-            containerView.heightAnchor.constraint(
-                equalToConstant: 75 * CGFloat(weekDays.count)
-            ),
-
-            tableView.topAnchor.constraint(
-                equalTo: containerView.topAnchor
-            ),
-
-            tableView.leadingAnchor.constraint(
-                equalTo: containerView.leadingAnchor
-            ),
-
-            tableView.trailingAnchor.constraint(
-                equalTo: containerView.trailingAnchor
-            ),
-
-            tableView.bottomAnchor.constraint(
-                equalTo: containerView.bottomAnchor
-            ),
-
-            doneButton.leadingAnchor.constraint(
-                equalTo: view.leadingAnchor,
-                constant: 20
-            ),
-
-            doneButton.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor,
-                constant: -20
-            ),
-
-            doneButton.bottomAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                constant: -16
-            ),
-
-            doneButton.heightAnchor.constraint(
-                equalToConstant: 60
-            )
+            
+            containerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
+            containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            containerView.heightAnchor.constraint(equalToConstant: 75 * CGFloat(weekDays.count)),
+            
+            tableView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+            
+            doneButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            doneButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            doneButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            doneButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
     

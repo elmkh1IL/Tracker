@@ -14,7 +14,7 @@ final class TrackerCategoryViewController: UIViewController {
     
     private let store: TrackerCategoryStore
     private let viewModel: TrackerCategoryViewModel
-    private var tableViewHeightConstraint: NSLayoutConstraint!
+    private var tableViewHeightConstraint: NSLayoutConstraint?
     
     private lazy var longPressGestureRecognizer =
     UILongPressGestureRecognizer(
@@ -31,8 +31,9 @@ final class TrackerCategoryViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        nil
     }
     
     override func viewDidLoad() {
@@ -97,7 +98,7 @@ final class TrackerCategoryViewController: UIViewController {
     private let placeholderImageView: UIImageView = {
         let imageView = UIImageView()
         
-        imageView.image = UIImage(named: "placeholderStar")
+        imageView.image = UIImage(resource: .placeholderStar)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         
         return imageView
@@ -146,73 +147,36 @@ final class TrackerCategoryViewController: UIViewController {
     }
     
     private func setupConstraints() {
-        tableViewHeightConstraint = tableView.heightAnchor.constraint(
-            equalToConstant: 0
-        )
-
+        
+        let heightConstraint = tableView.heightAnchor.constraint(equalToConstant: 0)
+        
+        tableViewHeightConstraint = heightConstraint
+        
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.topAnchor
-            ),
-            tableView.leadingAnchor.constraint(
-                equalTo: view.leadingAnchor,
-                constant: 16
-            ),
-            tableView.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor,
-                constant: -16
-            ),
-            tableViewHeightConstraint,
-
-            placeholderView.centerXAnchor.constraint(
-                equalTo: view.centerXAnchor
-            ),
-            placeholderView.centerYAnchor.constraint(
-                equalTo: view.centerYAnchor
-            ),
-
-            placeholderImageView.topAnchor.constraint(
-                equalTo: placeholderView.topAnchor
-            ),
-            placeholderImageView.centerXAnchor.constraint(
-                equalTo: placeholderView.centerXAnchor
-            ),
-            placeholderImageView.widthAnchor.constraint(
-                equalToConstant: 80
-            ),
-            placeholderImageView.heightAnchor.constraint(
-                equalToConstant: 80
-            ),
-
-            placeholderLabel.topAnchor.constraint(
-                equalTo: placeholderImageView.bottomAnchor,
-                constant: 8
-            ),
-            placeholderLabel.leadingAnchor.constraint(
-                equalTo: placeholderView.leadingAnchor
-            ),
-            placeholderLabel.trailingAnchor.constraint(
-                equalTo: placeholderView.trailingAnchor
-            ),
-            placeholderLabel.bottomAnchor.constraint(
-                equalTo: placeholderView.bottomAnchor
-            ),
-
-            addButton.leadingAnchor.constraint(
-                equalTo: view.leadingAnchor,
-                constant: 20
-            ),
-            addButton.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor,
-                constant: -20
-            ),
-            addButton.bottomAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                constant: -16
-            ),
-            addButton.heightAnchor.constraint(
-                equalToConstant: 60
-            )
+            
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
+            heightConstraint,
+            
+            placeholderView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            placeholderView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            
+            placeholderImageView.topAnchor.constraint(equalTo: placeholderView.topAnchor),
+            placeholderImageView.centerXAnchor.constraint(equalTo: placeholderView.centerXAnchor),
+            placeholderImageView.widthAnchor.constraint(equalToConstant: 80),
+            placeholderImageView.heightAnchor.constraint(equalToConstant: 80),
+            
+            placeholderLabel.topAnchor.constraint(equalTo: placeholderImageView.bottomAnchor, constant: 8),
+            placeholderLabel.leadingAnchor.constraint(equalTo: placeholderView.leadingAnchor),
+            placeholderLabel.trailingAnchor.constraint(equalTo: placeholderView.trailingAnchor),
+            placeholderLabel.bottomAnchor.constraint(equalTo: placeholderView.bottomAnchor),
+            
+            addButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            addButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            addButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            addButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
     
@@ -231,7 +195,7 @@ final class TrackerCategoryViewController: UIViewController {
             return
         }
 
-        tableViewHeightConstraint.constant = min(
+        tableViewHeightConstraint?.constant = min(
             contentHeight,
             maximumHeight
         )
@@ -284,9 +248,7 @@ final class TrackerCategoryViewController: UIViewController {
     }
     
     @objc
-    private func handleLongPress(
-        _ gestureRecognizer: UILongPressGestureRecognizer
-    ) {
+    private func handleLongPress(_ gestureRecognizer: UILongPressGestureRecognizer) {
         guard gestureRecognizer.state == .began else {
             return
         }
@@ -353,9 +315,7 @@ final class TrackerCategoryViewController: UIViewController {
         popover.permittedArrowDirections = []
     }
     
-    private func showEditCategory(
-        _ category: TrackerCategory
-    ) {
+    private func showEditCategory(_ category: TrackerCategory) {
         let editViewModel = NewCategoryViewModel(
             store: store,
             mode: .edit(originalTitle: category.title)
@@ -372,9 +332,7 @@ final class TrackerCategoryViewController: UIViewController {
         )
     }
     
-    private func showDeleteConfirmation(
-        for category: TrackerCategory
-    ) {
+    private func showDeleteConfirmation(for category: TrackerCategory) {
         let alert = UIAlertController(
             title: nil,
             message: "Эта категория точно не нужна?",
@@ -403,18 +361,12 @@ final class TrackerCategoryViewController: UIViewController {
 
 extension TrackerCategoryViewController: UITableViewDataSource {
 
-    func tableView(
-        _ tableView: UITableView,
-        numberOfRowsInSection section: Int
-    ) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
         viewModel.numberOfCategories
     }
 
-    func tableView(
-        _ tableView: UITableView,
-        cellForRowAt indexPath: IndexPath
-    ) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         guard let cell = tableView.dequeueReusableCell(
             withIdentifier: CategoryTableViewCell.reuseIdentifier,
@@ -440,10 +392,7 @@ extension TrackerCategoryViewController: UITableViewDataSource {
 
 extension TrackerCategoryViewController: UITableViewDelegate {
 
-    func tableView(
-        _ tableView: UITableView,
-        didSelectRowAt indexPath: IndexPath
-    ) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
         viewModel.selectCategory(at: indexPath.row)
     }

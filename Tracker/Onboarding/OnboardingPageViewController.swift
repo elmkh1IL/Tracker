@@ -5,13 +5,13 @@ final class OnboardingPageViewController: UIPageViewController {
     private lazy var pages: [UIViewController] = [
         OnboardingContentViewController(
             page: OnboardingPage(
-                image: "onboardingFirst",
+                imageName: "onboardingFirst",
                 title: "Отслеживайте только\nто, что хотите"
             )
         ),
         OnboardingContentViewController(
             page: OnboardingPage(
-                image: "onboardingSecond",
+                imageName: "onboardingSecond",
                 title: "Даже если это\nне литры воды и йога"
             )
         )
@@ -29,8 +29,9 @@ final class OnboardingPageViewController: UIPageViewController {
         )
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        nil
     }
     
     override func viewDidLoad() {

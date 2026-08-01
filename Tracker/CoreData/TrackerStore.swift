@@ -1,5 +1,6 @@
 import CoreData
 import UIKit
+import OSLog
 
 protocol TrackerStoreDelegate: AnyObject {
     
@@ -8,6 +9,11 @@ protocol TrackerStoreDelegate: AnyObject {
 
 final class TrackerStore: NSObject {
 
+    private let logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier ?? "Tracker",
+        category: "TrackerStore"
+    )
+    
     weak var delegate: TrackerStoreDelegate?
 
     private let context: NSManagedObjectContext
@@ -78,7 +84,7 @@ final class TrackerStore: NSObject {
         do {
             try fetchedResultsController.performFetch()
         } catch {
-            print(error)
+            logger.error("Ошибка: \(error.localizedDescription)")
         }
     }
     

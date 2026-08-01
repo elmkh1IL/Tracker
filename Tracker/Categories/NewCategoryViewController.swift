@@ -9,6 +9,10 @@ import UIKit
 
 final class NewCategoryViewController: UIViewController {
 
+    private enum Constants {
+        static let maxCategoryTitleLength = 38
+    }
+    
     private let viewModel: NewCategoryViewModel
     private let initialTitle: String?
 
@@ -21,8 +25,9 @@ final class NewCategoryViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        nil
     }
 
     override func viewDidLoad() {
@@ -100,14 +105,14 @@ final class NewCategoryViewController: UIViewController {
     }
     
     private func setupConstraints() {
-
+        
         NSLayoutConstraint.activate([
-
+            
             textField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
             textField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             textField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             textField.heightAnchor.constraint(equalToConstant: 75),
-
+            
             doneButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             doneButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             doneButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
@@ -161,6 +166,6 @@ extension NewCategoryViewController: UITextFieldDelegate {
 
         let updatedText = currentText.replacingCharacters(in: textRange, with: string)
 
-        return updatedText.count <= 38
+        return updatedText.count <= Constants.maxCategoryTitleLength
     }
 }

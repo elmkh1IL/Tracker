@@ -1,7 +1,13 @@
 import CoreData
+import OSLog
 
 final class CoreDataStack {
 
+    private let logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier ?? "Tracker",
+        category: "CoreDataStack"
+    )
+    
     static let shared = CoreDataStack()
 
     let persistentContainer: NSPersistentContainer
@@ -15,10 +21,11 @@ final class CoreDataStack {
         persistentContainer.loadPersistentStores { _, error in
 
             if let error = error {
-
-                fatalError(
-                    "Не удалось загрузить Core Data: \(error)"
-                )
+                
+                self.logger.fault(
+                    "Не удалось загрузить Core Data: \(error.localizedDescription)")
+                
+                preconditionFailure("Core Data initialization failed")
             }
         }
     }
@@ -39,8 +46,7 @@ final class CoreDataStack {
 
         } catch {
 
-            print(
-                "Ошибка сохранения: \(error)"
+            logger.error("Ошибка сохранения: \(error)"
             )
         }
     }

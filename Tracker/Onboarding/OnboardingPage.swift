@@ -1,4 +1,4 @@
 struct OnboardingPage {
-    let image: String
+    let imageName: String
     let title: String
 }

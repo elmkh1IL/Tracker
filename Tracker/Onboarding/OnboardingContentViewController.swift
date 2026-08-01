@@ -12,10 +12,10 @@ final class OnboardingContentViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError()
+        nil
     }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -25,7 +25,7 @@ final class OnboardingContentViewController: UIViewController {
 
     private func setupImage() {
 
-        imageView.image = UIImage(named: page.image)
+        imageView.image = UIImage(named: page.imageName)
         imageView.contentMode = .scaleAspectFill
 
         view.addSubview(imageView)

@@ -25,12 +25,11 @@ final class TrackerCreationViewController: UIViewController {
         }
     }
 
-    private var scheduleTitleCenterConstraint: NSLayoutConstraint!
-    private var scheduleTitleTopConstraint: NSLayoutConstraint!
-    private var categoryTitleCenterConstraint: NSLayoutConstraint!
-    private var categoryTitleTopConstraint: NSLayoutConstraint!
+    private var scheduleTitleCenterConstraint: NSLayoutConstraint?
+    private var scheduleTitleTopConstraint: NSLayoutConstraint?
+    private var categoryTitleCenterConstraint: NSLayoutConstraint?
+    private var categoryTitleTopConstraint: NSLayoutConstraint?
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -324,15 +323,15 @@ final class TrackerCreationViewController: UIViewController {
             scheduleSubtitleLabel.isHidden = true
             scheduleSubtitleLabel.text = nil
             
-            scheduleTitleTopConstraint.isActive = false
-            scheduleTitleCenterConstraint.isActive = true
+            scheduleTitleTopConstraint?.isActive = false
+            scheduleTitleCenterConstraint?.isActive = true
 
             return
         }
         
         scheduleSubtitleLabel.isHidden = false
-        scheduleTitleCenterConstraint.isActive = false
-        scheduleTitleTopConstraint.isActive = true
+        scheduleTitleCenterConstraint?.isActive = false
+        scheduleTitleTopConstraint?.isActive = true
         
         if selectedWeekDays.count == WeekDay.allCases.count {
             scheduleSubtitleLabel.text = "Каждый день"
@@ -374,20 +373,20 @@ final class TrackerCreationViewController: UIViewController {
         
         scheduleTitleCenterConstraint = scheduleTitleLabel.centerYAnchor.constraint(equalTo: scheduleButton.centerYAnchor)
         scheduleTitleTopConstraint = scheduleTitleLabel.topAnchor.constraint(equalTo: separatorView.bottomAnchor, constant: 16)
-        scheduleTitleCenterConstraint.isActive = true
+        scheduleTitleCenterConstraint?.isActive = true
 
         categoryTitleCenterConstraint = categoryTitleLabel.centerYAnchor.constraint(equalTo: categoryButton.centerYAnchor)
         categoryTitleTopConstraint = categoryTitleLabel.topAnchor.constraint(equalTo: optionsView.topAnchor, constant: 16)
 
-        categoryTitleCenterConstraint.isActive = true
+        categoryTitleCenterConstraint?.isActive = true
         
         NSLayoutConstraint.activate([
-
+            
             nameTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
             nameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             nameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
-
+            
             optionsView.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 24),
             optionsView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             optionsView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
@@ -402,16 +401,16 @@ final class TrackerCreationViewController: UIViewController {
             categoryButton.leadingAnchor.constraint(equalTo: optionsView.leadingAnchor),
             categoryButton.trailingAnchor.constraint(equalTo: optionsView.trailingAnchor),
             categoryButton.heightAnchor.constraint(equalToConstant: 75),
-
+            
             categorySubtitleLabel.leadingAnchor.constraint(equalTo: categoryTitleLabel.leadingAnchor),
             categorySubtitleLabel.topAnchor.constraint(equalTo: categoryTitleLabel.bottomAnchor, constant: 2),
             categoryTitleLabel.leadingAnchor.constraint(equalTo: optionsView.leadingAnchor, constant: 16),
-
+            
             separatorView.topAnchor.constraint(equalTo: categoryButton.bottomAnchor),
             separatorView.leadingAnchor.constraint(equalTo: optionsView.leadingAnchor, constant: 16),
             separatorView.trailingAnchor.constraint(equalTo: optionsView.trailingAnchor),
             separatorView.heightAnchor.constraint(equalToConstant: 1),
-
+            
             scheduleButton.topAnchor.constraint(equalTo: separatorView.bottomAnchor),
             scheduleButton.leadingAnchor.constraint(equalTo: optionsView.leadingAnchor),
             scheduleButton.trailingAnchor.constraint(equalTo: optionsView.trailingAnchor),
@@ -424,17 +423,17 @@ final class TrackerCreationViewController: UIViewController {
             cancelButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             cancelButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
             cancelButton.heightAnchor.constraint(equalToConstant: 60),
-
+            
             createButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             createButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
             createButton.heightAnchor.constraint(equalToConstant: 60),
-
+            
             cancelButton.widthAnchor.constraint(equalTo: createButton.widthAnchor),
             createButton.leadingAnchor.constraint(equalTo: cancelButton.trailingAnchor, constant: 8),
             
             categoryChevron.centerYAnchor.constraint(equalTo: categoryButton.centerYAnchor),
             categoryChevron.trailingAnchor.constraint(equalTo: optionsView.trailingAnchor, constant: -16),
-
+            
             scheduleChevron.centerYAnchor.constraint(equalTo: scheduleButton.centerYAnchor),
             scheduleChevron.trailingAnchor.constraint(equalTo: optionsView.trailingAnchor, constant: -16),
             
@@ -542,16 +541,16 @@ final class TrackerCreationViewController: UIViewController {
 
             categorySubtitleLabel.isHidden = true
 
-            categoryTitleTopConstraint.isActive = false
-            categoryTitleCenterConstraint.isActive = true
+            categoryTitleTopConstraint?.isActive = false
+            categoryTitleCenterConstraint?.isActive = true
 
             return
         }
 
         categorySubtitleLabel.isHidden = false
 
-        categoryTitleCenterConstraint.isActive = false
-        categoryTitleTopConstraint.isActive = true
+        categoryTitleCenterConstraint?.isActive = false
+        categoryTitleTopConstraint?.isActive = true
     }
 }
 

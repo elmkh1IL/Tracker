@@ -59,23 +59,10 @@ final class WeekDayCell: UITableViewCell {
             daySwitch.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             daySwitch.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             
-            separatorView.leadingAnchor.constraint(
-                equalTo: contentView.leadingAnchor,
-                constant: 16
-            ),
-
-            separatorView.trailingAnchor.constraint(
-                equalTo: contentView.trailingAnchor,
-                constant: -16
-            ),
-
-            separatorView.bottomAnchor.constraint(
-                equalTo: contentView.bottomAnchor
-            ),
-
-            separatorView.heightAnchor.constraint(
-                equalToConstant: 1
-            ),
+            separatorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            separatorView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            separatorView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            separatorView.heightAnchor.constraint(equalToConstant: 1),
             
         ])
     }

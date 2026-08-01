@@ -41,8 +41,9 @@ final class EmojiColorCollectionViewCell: UICollectionViewCell {
         ])
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError()
+        nil
     }
     
     func configure(with emoji: String) {

@@ -1,6 +1,12 @@
 import UIKit
+import OSLog
 
 final class TrackersViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+    
+    private let logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier ?? "Tracker",
+        category: "TrackersViewController"
+    )
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return visibleCategories[section].trackers.count
@@ -13,11 +19,11 @@ final class TrackersViewController: UIViewController, UICollectionViewDataSource
         
         let tracker = visibleCategories[indexPath.section].trackers[indexPath.item]
 
-        let completedDays = completedTrackers.filter {
+        let completedDays = trackerRecordStore.records.filter {
             $0.trackerID == tracker.id
         }.count
         
-        let isCompleted = completedTrackers.contains {
+        let isCompleted = trackerRecordStore.records.contains {
             $0.trackerID == tracker.id &&
             Calendar.current.isDate($0.date, inSameDayAs: currentDate)
         }
@@ -30,8 +36,10 @@ final class TrackersViewController: UIViewController, UICollectionViewDataSource
         cell.delegate = self
         return cell
     }
-
-    private var completedTrackers: [TrackerRecord] = []
+    
+    private let trackerRecordStore = TrackerRecordStore(
+        context: CoreDataStack.shared.context
+    )
 
     private var currentDate = Date()
     
@@ -47,10 +55,13 @@ final class TrackersViewController: UIViewController, UICollectionViewDataSource
         setupViews()
         setupConstraints()
         configureCollectionView()
+        
         trackerStore.delegate = self
+        trackerRecordStore.delegate = self
         searchBar.delegate = self
-        //createTestData()
+        
         updatePlaceholder()
+        
         collectionView.reloadData()
     }
     
@@ -277,8 +288,6 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
             width: width,
             height: 148
         )
-        
-        //return CGSize(width: 167, height: 148)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
@@ -311,11 +320,11 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
 extension TrackersViewController: TrackerCollectionViewCellDelegate {
 
     func didTapCompleteButton(on cell: TrackerCollectionViewCell) {
-
+        
         guard let indexPath = collectionView.indexPath(for: cell) else {
             return
         }
-
+        
         let tracker = visibleCategories[indexPath.section].trackers[indexPath.item]
         
         let calendar = Calendar.current
@@ -328,24 +337,25 @@ extension TrackersViewController: TrackerCollectionViewCellDelegate {
             return
         }
         
-        let completedTrackerIndex = completedTrackers.firstIndex { record in record.trackerID == tracker.id &&
-            Calendar.current.isDate(record.date, inSameDayAs: currentDate)
+        let isCompleted = trackerRecordStore.records.contains {
+            $0.trackerID == tracker.id &&
+            Calendar.current.isDate(
+                $0.date,
+                inSameDayAs: currentDate
+            )
         }
         
-        if let index = completedTrackerIndex {
-
-            completedTrackers.remove(at: index)
-
-        } else {
-
-            let newRecord = TrackerRecord(
+        if isCompleted {
+            trackerRecordStore.deleteRecord(
                 trackerID: tracker.id,
                 date: currentDate
             )
-
-            completedTrackers.append(newRecord)
+        } else {
+            trackerRecordStore.addRecord(
+                trackerID: tracker.id,
+                date: currentDate
+            )
         }
-        collectionView.reloadData()
     }
 }
 
@@ -373,12 +383,12 @@ extension TrackersViewController: TrackerCreationViewControllerDelegate {
                     categoryTitle: category.title
                 )
             } catch {
-                print("Не удалось сохранить трекер: \(error)")
+                logger.error("Не удалось сохранить трекер: \(error.localizedDescription)")
             }
         }
 }
 
-extension TrackersViewController: TrackerStoreDelegate {
+extension TrackersViewController: TrackerStoreDelegate, TrackerRecordStoreDelegate {
 
     func didUpdate() {
 
