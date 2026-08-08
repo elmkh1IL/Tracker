@@ -79,7 +79,6 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     private let daysLabel: UILabel = {
         let label = UILabel()
 
-        label.text = "0 дней"
         label.font = .systemFont(ofSize: 12)
 
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -95,7 +94,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
             for: .normal
         )
 
-        button.tintColor = .white
+        button.tintColor = .systemBackground
         button.backgroundColor = .systemGreen
 
         button.layer.cornerRadius = 17
@@ -121,8 +120,10 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     }
     
     private func updateDaysLabel() {
-
-        daysLabel.text = "\(completedDays) \(completedDays == 1 ? "день" : "дней")"
+        
+        let format = String(localized: "tracker.days.count")
+        
+        daysLabel.text = String.localizedStringWithFormat(format, completedDays)
     }
     
     private var isCompleted = false
@@ -144,6 +145,23 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
 
         updateButton()
         updateDaysLabel()
+    }
+    
+    func makeContextMenuPreview() -> UITargetedPreview {
+        layoutIfNeeded()
+
+        let parameters = UIPreviewParameters()
+        parameters.backgroundColor = .clear
+
+        parameters.visiblePath = UIBezierPath(
+            roundedRect: cardView.bounds,
+            cornerRadius: cardView.layer.cornerRadius
+        )
+
+        return UITargetedPreview(
+            view: cardView,
+            parameters: parameters
+        )
     }
     
     private func setupConstraints() {

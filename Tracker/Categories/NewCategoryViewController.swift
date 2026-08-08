@@ -53,9 +53,9 @@ final class NewCategoryViewController: UIViewController {
 
         let textField = UITextField()
 
-        textField.placeholder = "Введите название категории"
+        textField.placeholder = String(localized: "category.name.placeholder")
 
-        textField.backgroundColor = .systemGray6
+        textField.backgroundColor = .trackerSecondaryBackground
         textField.layer.cornerRadius = 16
 
         textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
@@ -70,11 +70,11 @@ final class NewCategoryViewController: UIViewController {
 
         let button = UIButton(type: .system)
 
-        button.setTitle("Готово", for: .normal)
+        button.setTitle(String(localized: "common.done"), for: .normal)
 
         button.setTitleColor(.white, for: .normal)
 
-        button.backgroundColor = .systemGray3
+        button.backgroundColor = .trackerGray
 
         button.layer.cornerRadius = 16
 
@@ -121,22 +121,41 @@ final class NewCategoryViewController: UIViewController {
     }
     
     private func bind() {
-
+        
         viewModel.onButtonStateChanged = { [weak self] isEnabled in
-
-            self?.doneButton.isEnabled = isEnabled
-            self?.doneButton.backgroundColor = isEnabled ? .black : .systemGray3
+            
+            guard let self else {
+                return
+            }
+            
+            self.doneButton.isEnabled = isEnabled
+            
+            if isEnabled {
+                self.doneButton.backgroundColor = .label
+                
+                self.doneButton.setTitleColor(
+                    .systemBackground,
+                    for: .normal
+                )
+            } else {
+                self.doneButton.backgroundColor = .trackerGray
+                
+                self.doneButton.setTitleColor(
+                    .white,
+                    for: .normal
+                )
+            }
         }
-
+        
         viewModel.onCategorySaved = { [weak self] in
-
+            
             self?.navigationController?.popViewController(animated: true)
         }
     }
     
     @objc
     private func textFieldDidChange() {
-
+        
         viewModel.titleDidChange(textField.text)
     }
     

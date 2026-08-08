@@ -34,11 +34,11 @@ final class ScheduleViewController: UIViewController {
     private let doneButton: UIButton = {
         let button = UIButton(type: .system)
 
-        button.setTitle("Готово", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitle(String(localized: "common.done"), for: .normal)
+        button.setTitleColor(.systemBackground, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
 
-        button.backgroundColor = .black
+        button.backgroundColor = .label
         button.layer.cornerRadius = 16
 
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -50,7 +50,7 @@ final class ScheduleViewController: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
-        navigationItem.title = "Расписание"
+        navigationItem.title = String(localized: "tracker.schedule")
         tableView.delegate = self
         navigationItem.hidesBackButton = true
         tableView.separatorStyle = .none
@@ -85,7 +85,7 @@ final class ScheduleViewController: UIViewController {
     private let containerView: UIView = {
         let view = UIView()
 
-        view.backgroundColor = .systemGray6
+        view.backgroundColor = .trackerSecondaryBackground
         view.layer.cornerRadius = 16
 
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -145,6 +145,9 @@ extension ScheduleViewController: UITableViewDataSource {
         cell.daySwitch.isOn = selectedWeekDays.contains(
             weekDays[indexPath.row]
         )
+        
+        cell.backgroundColor = .clear
+        cell.contentView.backgroundColor = .clear
         
         cell.selectionStyle = .none
 

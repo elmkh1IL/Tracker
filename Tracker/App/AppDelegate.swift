@@ -1,10 +1,23 @@
 import UIKit
+import AppMetricaCore
 
 @main
 final class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        
+        if let configuration = AppMetricaConfiguration(
+                apiKey: "c68572f3-a193-425e-8344-b923958306e4" //TODO: скрыть
+            ) {
+        #if DEBUG
+                configuration.areLogsEnabled = true
+        #endif
+
+                AppMetrica.activate(with: configuration)
+            } else {
+                assertionFailure("Не удалось создать конфигурацию AppMetrica")
+            }
+        
         return true
     }
 

@@ -73,7 +73,7 @@ final class EmojiColorCollectionViewCell: UICollectionViewCell {
         } else {
             
             contentView.backgroundColor = selected
-            ? UIColor.systemGray5
+            ? UIColor.trackerEmojiSelection
             : .clear
         }
     }

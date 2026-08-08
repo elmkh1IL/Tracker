@@ -81,7 +81,7 @@ final class CategoryTableViewCell: UITableViewCell {
 private extension CategoryTableViewCell {
     
     func configureCell() {
-        contentView.backgroundColor = .systemGray6
+        contentView.backgroundColor = .trackerSecondaryBackground
         selectionStyle = .none
         
         separatorInset = UIEdgeInsets(
