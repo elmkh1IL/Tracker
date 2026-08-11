@@ -123,6 +123,55 @@ final class TrackerStore: NSObject {
         try context.save()
     }
     
+    func updateTracker(_ tracker: Tracker,categoryTitle: String) throws {
+        let trackerRequest: NSFetchRequest<TrackerCoreData> =
+            TrackerCoreData.fetchRequest()
+
+        trackerRequest.fetchLimit = 1
+        trackerRequest.predicate = NSPredicate(
+            format: "id == %@",
+            tracker.id as CVarArg
+        )
+
+        guard let trackerCoreData =
+            try context.fetch(trackerRequest).first
+        else {
+            return
+        }
+
+        trackerCoreData.name = tracker.name
+        trackerCoreData.emoji = tracker.emoji
+        trackerCoreData.color = tracker.color
+        trackerCoreData.schedule =
+            tracker.schedule.map(\.rawValue) as NSObject
+
+        let categoryRequest:
+            NSFetchRequest<TrackerCategoryCoreData> =
+            TrackerCategoryCoreData.fetchRequest()
+
+        categoryRequest.fetchLimit = 1
+        categoryRequest.predicate = NSPredicate(
+            format: "title == %@",
+            categoryTitle
+        )
+
+        let categoryCoreData: TrackerCategoryCoreData
+
+        if let existingCategory =
+            try context.fetch(categoryRequest).first {
+            categoryCoreData = existingCategory
+        } else {
+            categoryCoreData = TrackerCategoryCoreData(
+                context: context
+            )
+            categoryCoreData.title = categoryTitle
+        }
+
+        trackerCoreData.category = categoryCoreData
+
+        try context.save()
+    }
+    
     private func makeTracker(
         from object: TrackerCoreData
     ) -> Tracker? {
@@ -147,6 +196,22 @@ final class TrackerStore: NSObject {
             emoji: emoji,
             schedule: schedule
         )
+    }
+    
+    func deleteTracker(_ tracker: Tracker) throws {
+        let request = TrackerCoreData.fetchRequest()
+
+        request.predicate = NSPredicate(
+            format: "id == %@",
+            tracker.id as CVarArg
+        )
+
+        guard let trackerCoreData = try context.fetch(request).first else {
+            return
+        }
+
+        context.delete(trackerCoreData)
+        try context.save()
     }
 }
 

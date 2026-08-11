@@ -31,9 +31,9 @@ final class NewCategoryViewModel {
     var screenTitle: String {
         switch mode {
         case .create:
-            return "Новая категория"
+            return String(localized: "category.creation.title")
         case .edit:
-            return "Редактирование категории"
+            return String(localized: "category.edit.title")
         }
     }
     

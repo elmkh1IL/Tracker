@@ -1,3 +1,5 @@
+import Foundation
+
 enum WeekDay: Int, CaseIterable {
     case monday
     case tuesday
@@ -10,37 +12,37 @@ enum WeekDay: Int, CaseIterable {
     var title: String {
         switch self {
         case .monday:
-            "Понедельник"
+            String(localized: "weekday.monday")
         case .tuesday:
-            "Вторник"
+            String(localized: "weekday.tuesday")
         case .wednesday:
-            "Среда"
+            String(localized: "weekday.wednesday")
         case .thursday:
-            "Четверг"
+            String(localized: "weekday.thursday")
         case .friday:
-            "Пятница"
+            String(localized: "weekday.friday")
         case .saturday:
-            "Суббота"
+            String(localized: "weekday.saturday")
         case .sunday:
-            "Воскресенье"
+            String(localized: "weekday.sunday")
         }
     }
     var shortTitle: String {
         switch self {
         case .monday:
-            "Пн"
+            String(localized: "weekday.monday.short")
         case .tuesday:
-            "Вт"
+            String(localized: "weekday.tuesday.short")
         case .wednesday:
-            "Ср"
+            String(localized: "weekday.wednesday.short")
         case .thursday:
-            "Чт"
+            String(localized: "weekday.thursday.short")
         case .friday:
-            "Пт"
+            String(localized: "weekday.friday.short")
         case .saturday:
-            "Сб"
+            String(localized: "weekday.saturday.short")
         case .sunday:
-            "Вс"
+            String(localized: "weekday.sunday.short")
         }
     }
 }

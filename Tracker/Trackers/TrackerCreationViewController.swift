@@ -1,38 +1,46 @@
 import UIKit
 
+enum TrackerCreationMode {
+    case create
+    case edit(
+        tracker: Tracker,
+        categoryTitle: String,
+        completedDays: Int
+    )
+}
+
 protocol TrackerCreationViewControllerDelegate: AnyObject {
 
-    func didCreateTracker(
-            _ tracker: Tracker,
-            category: TrackerCategory
-        )
+    func didCreateTracker(_ tracker: Tracker, category: TrackerCategory)
+    
+    func didUpdateTracker(_ tracker: Tracker, category: TrackerCategory)
 }
 
 final class TrackerCreationViewController: UIViewController {
     
     enum Section: Int, CaseIterable {
-
+        
         case emoji
         case color
-
+        
         var title: String {
             switch self {
             case .emoji:
-                "Emoji"
+                String(localized: "tracker.section.emoji")
             case .color:
-                "Цвет"
+                String(localized: "tracker.section.color")
             }
         }
     }
-
+    
     private var scheduleTitleCenterConstraint: NSLayoutConstraint?
     private var scheduleTitleTopConstraint: NSLayoutConstraint?
     private var categoryTitleCenterConstraint: NSLayoutConstraint?
     private var categoryTitleTopConstraint: NSLayoutConstraint?
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         configureAppearance()
         configureNavigationBar()
         navigationItem.backButtonDisplayMode = .minimal
@@ -40,6 +48,7 @@ final class TrackerCreationViewController: UIViewController {
         setupViews()
         setupConstraints()
         
+        configureMode()
         updateCreateButtonState()
         
         nameTextField.addTarget(
@@ -53,7 +62,7 @@ final class TrackerCreationViewController: UIViewController {
             action: #selector(cancelButtonTapped),
             for: .touchUpInside
         )
-
+        
         scheduleButton.addTarget(
             self,
             action: #selector(scheduleButtonTapped),
@@ -71,15 +80,33 @@ final class TrackerCreationViewController: UIViewController {
             action: #selector(createButtonTapped),
             for: .touchUpInside
         )
-    
+        
     }
+    
+    private let mode: TrackerCreationMode
     
     private var selectedWeekDays: Set<WeekDay> = []
     private var selectedCategory: TrackerCategory?
     
     private var selectedEmoji: String?
     private var selectedColor: UIColor?
-
+    
+    init(mode: TrackerCreationMode = .create) {
+        self.mode = mode
+        
+        super.init(
+            nibName: nil,
+            bundle: nil
+        )
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError(
+            "init(coder:) has not been implemented"
+        )
+    }
+    
+    
     private let emojis = [
         "🙂","😻","🌺","🐶","❤️","😱",
         "😇","😡","🥶","🤔","🙌","🍔",
@@ -119,34 +146,34 @@ final class TrackerCreationViewController: UIViewController {
     }
     
     private func configureNavigationBar() {
-        title = "Новая привычка"
+        title = String(localized: "tracker.creation.title")
     }
     
     private let nameTextField: UITextField = {
         let textField = UITextField()
-
-        textField.placeholder = "Введите название трекера"
+        
+        textField.placeholder = String(localized: "tracker.name.placeholder")
         textField.font = .systemFont(ofSize: 17)
-
-        textField.backgroundColor = .systemGray6
+        
+        textField.backgroundColor = .trackerSecondaryBackground
         textField.layer.cornerRadius = 16
         
         textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
         textField.leftViewMode = .always
-
+        
         textField.translatesAutoresizingMaskIntoConstraints = false
-
+        
         return textField
     }()
     
     private let optionsView: UIView = {
         let view = UIView()
-
-        view.backgroundColor = .systemGray6
+        
+        view.backgroundColor = .trackerSecondaryBackground
         view.layer.cornerRadius = 16
-
+        
         view.translatesAutoresizingMaskIntoConstraints = false
-
+        
         return view
     }()
     
@@ -162,31 +189,31 @@ final class TrackerCreationViewController: UIViewController {
             bottom: 0,
             right: 32
         )
-
+        
         button.translatesAutoresizingMaskIntoConstraints = false
-
+        
         return button
     }()
     
     private let categoryTitleLabel: UILabel = {
         let label = UILabel()
-
-        label.text = "Категория"
+        
+        label.text = String(localized: "tracker.category")
         label.font = .systemFont(ofSize: 17)
         label.textColor = .label
         label.translatesAutoresizingMaskIntoConstraints = false
-
+        
         return label
     }()
     
     private let categorySubtitleLabel: UILabel = {
         let label = UILabel()
-
+        
         label.font = .systemFont(ofSize: 17)
         label.textColor = .systemGray
         label.isHidden = true
         label.translatesAutoresizingMaskIntoConstraints = false
-
+        
         return label
     }()
     
@@ -194,7 +221,7 @@ final class TrackerCreationViewController: UIViewController {
         let button = UIButton(type: .system)
         
         button.backgroundColor = .clear
-
+        
         button.contentHorizontalAlignment = .left
         
         button.contentEdgeInsets = UIEdgeInsets(
@@ -204,7 +231,7 @@ final class TrackerCreationViewController: UIViewController {
             right: 32
         )
         button.translatesAutoresizingMaskIntoConstraints = false
-
+        
         return button
     }()
     
@@ -215,79 +242,78 @@ final class TrackerCreationViewController: UIViewController {
         label.textColor = .systemGray
         label.isHidden = true
         label.translatesAutoresizingMaskIntoConstraints = false
-
+        
         return label
     }()
     
     private let scheduleTitleLabel: UILabel = {
         let label = UILabel()
-
-        label.text = "Расписание"
+        
+        label.text = String(localized: "tracker.schedule")
         label.font = .systemFont(ofSize: 17)
         label.textColor = .label
         label.translatesAutoresizingMaskIntoConstraints = false
-
+        
         return label
     }()
     
     private let categoryChevron: UIImageView = {
         let imageView = UIImageView()
-
+        
         imageView.image = UIImage(systemName: "chevron.right")
         imageView.tintColor = .systemGray3
         imageView.translatesAutoresizingMaskIntoConstraints = false
         
         return imageView
     }()
-
+    
     private let scheduleChevron: UIImageView = {
         let imageView = UIImageView()
-
+        
         imageView.image = UIImage(systemName: "chevron.right")
         imageView.tintColor = .systemGray3
         imageView.translatesAutoresizingMaskIntoConstraints = false
-
+        
         return imageView
     }()
     
     private let cancelButton: UIButton = {
         let button = UIButton(type: .system)
-
-        button.setTitle("Отменить", for: .normal)
+        
+        button.setTitle(String(localized: "common.cancel"), for: .normal)
         button.setTitleColor(.systemRed, for: .normal)
-
+        
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor.systemRed.cgColor
         button.layer.cornerRadius = 16
-
+        
         button.translatesAutoresizingMaskIntoConstraints = false
-
+        
         return button
     }()
     
     private let createButton: UIButton = {
         let button = UIButton(type: .system)
-
-        button.setTitle("Создать", for: .normal)
+        
+        button.setTitle(String(localized: "common.save"), for: .normal)
         button.setTitleColor(.white, for: .normal)
-
-        button.backgroundColor = .systemGray3
+        
+        button.backgroundColor = .trackerGray
         button.layer.cornerRadius = 16
-
+        
         button.translatesAutoresizingMaskIntoConstraints = false
-
+        
         return button
     }()
     
     @objc
     private func createButtonTapped() {
-
-        guard let name = nameTextField.text,
-              !name.isEmpty else {
-            return
-        }
-        
         guard
+            let name = nameTextField.text?
+                .trimmingCharacters(
+                    in: .whitespacesAndNewlines
+                ),
+            !name.isEmpty,
             let category = selectedCategory,
             let emoji = selectedEmoji,
             let color = selectedColor
@@ -295,22 +321,42 @@ final class TrackerCreationViewController: UIViewController {
             return
         }
         
-        let tracker = Tracker(
-            id: UUID(),
-            name: name,
-            color: color,
-            emoji: emoji,
-            schedule: Array(selectedWeekDays)
-        )
-
-        delegate?.didCreateTracker(tracker, category: category)
-
+        switch mode {
+        case .create:
+            let tracker = Tracker(
+                id: UUID(),
+                name: name,
+                color: color,
+                emoji: emoji,
+                schedule: Array(selectedWeekDays)
+            )
+            
+            delegate?.didCreateTracker(
+                tracker,
+                category: category
+            )
+            
+        case let .edit(oldTracker, _, _):
+            let updatedTracker = Tracker(
+                id: oldTracker.id,
+                name: name,
+                color: color,
+                emoji: emoji,
+                schedule: Array(selectedWeekDays)
+            )
+            
+            delegate?.didUpdateTracker(
+                updatedTracker,
+                category: category
+            )
+        }
+        
         dismiss(animated: true)
     }
     
     private let separatorView: UIView = {
         let view = UIView()
-
+        
         view.backgroundColor = .systemGray5
         view.translatesAutoresizingMaskIntoConstraints = false
         
@@ -325,7 +371,7 @@ final class TrackerCreationViewController: UIViewController {
             
             scheduleTitleTopConstraint?.isActive = false
             scheduleTitleCenterConstraint?.isActive = true
-
+            
             return
         }
         
@@ -334,7 +380,7 @@ final class TrackerCreationViewController: UIViewController {
         scheduleTitleTopConstraint?.isActive = true
         
         if selectedWeekDays.count == WeekDay.allCases.count {
-            scheduleSubtitleLabel.text = "Каждый день"
+            scheduleSubtitleLabel.text = String(localized: "schedule.everyDay")
             return
         }
         
@@ -348,14 +394,16 @@ final class TrackerCreationViewController: UIViewController {
     }
     
     private func setupViews() {
+        
+        view.addSubview(completedDaysLabel)
         view.addSubview(nameTextField)
         view.addSubview(optionsView)
         view.addSubview(collectionView)
-
+        
         optionsView.addSubview(categoryButton)
         optionsView.addSubview(separatorView)
         optionsView.addSubview(scheduleButton)
-
+        
         view.addSubview(cancelButton)
         view.addSubview(createButton)
         
@@ -364,25 +412,45 @@ final class TrackerCreationViewController: UIViewController {
         
         optionsView.addSubview(categoryTitleLabel)
         optionsView.addSubview(categorySubtitleLabel)
-
+        
         optionsView.addSubview(scheduleTitleLabel)
         optionsView.addSubview(scheduleSubtitleLabel)
     }
     
+    private var nameTextFieldCreateTopConstraint: NSLayoutConstraint?
+    private var nameTextFieldEditTopConstraint: NSLayoutConstraint?
+    
     private func setupConstraints() {
+        
+        nameTextFieldCreateTopConstraint = nameTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24)
+        
+        nameTextFieldEditTopConstraint = nameTextField.topAnchor.constraint(equalTo: completedDaysLabel.bottomAnchor, constant: 24)
+        
+        nameTextFieldCreateTopConstraint?.isActive = true
+        
+        scheduleTitleCenterConstraint = scheduleTitleLabel.centerYAnchor.constraint(equalTo: scheduleButton.centerYAnchor)
+        
         
         scheduleTitleCenterConstraint = scheduleTitleLabel.centerYAnchor.constraint(equalTo: scheduleButton.centerYAnchor)
         scheduleTitleTopConstraint = scheduleTitleLabel.topAnchor.constraint(equalTo: separatorView.bottomAnchor, constant: 16)
         scheduleTitleCenterConstraint?.isActive = true
-
+        
         categoryTitleCenterConstraint = categoryTitleLabel.centerYAnchor.constraint(equalTo: categoryButton.centerYAnchor)
         categoryTitleTopConstraint = categoryTitleLabel.topAnchor.constraint(equalTo: optionsView.topAnchor, constant: 16)
-
+        
         categoryTitleCenterConstraint?.isActive = true
         
         NSLayoutConstraint.activate([
             
-            nameTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
+            completedDaysLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
+            completedDaysLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            completedDaysLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
+            nameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            nameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            nameTextField.heightAnchor.constraint(equalToConstant: 75),
+            
+            
             nameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             nameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
@@ -441,31 +509,31 @@ final class TrackerCreationViewController: UIViewController {
     }
     
     private lazy var collectionView: UICollectionView = {
-
+        
         let layout = UICollectionViewFlowLayout()
-
+        
         let collection = UICollectionView(
             frame: .zero,
             collectionViewLayout: layout
         )
-
+        
         collection.backgroundColor = .clear
         collection.translatesAutoresizingMaskIntoConstraints = false
-
+        
         collection.delegate = self
         collection.dataSource = self
-
+        
         collection.register(
             EmojiColorCollectionViewCell.self,
             forCellWithReuseIdentifier: EmojiColorCollectionViewCell.reuseIdentifier
         )
-
+        
         collection.register(
             TrackerSectionHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: TrackerSectionHeaderView.reuseIdentifier
         )
-
+        
         return collection
     }()
     
@@ -473,14 +541,14 @@ final class TrackerCreationViewController: UIViewController {
     private func cancelButtonTapped() {
         dismiss(animated: true)
     }
-
+    
     @objc
     private func scheduleButtonTapped() {
-
+        
         let scheduleViewController = ScheduleViewController()
         
         scheduleViewController.delegate = self
-
+        
         navigationController?.pushViewController(
             scheduleViewController,
             animated: true
@@ -489,24 +557,24 @@ final class TrackerCreationViewController: UIViewController {
     
     @objc
     private func categoryButtonTapped() {
-
+        
         let viewModel = TrackerCategoryViewModel(
-                store: categoryStore,
-                selectedCategory: selectedCategory
-            )
-
-            let viewController = TrackerCategoryViewController(
-                store: categoryStore,
-                viewModel: viewModel
-            )
-
-            viewController.delegate = self
-
-            navigationController?.pushViewController(
-                viewController,
-                animated: true
-            )
-        }
+            store: categoryStore,
+            selectedCategory: selectedCategory
+        )
+        
+        let viewController = TrackerCategoryViewController(
+            store: categoryStore,
+            viewModel: viewModel
+        )
+        
+        viewController.delegate = self
+        
+        navigationController?.pushViewController(
+            viewController,
+            animated: true
+        )
+    }
     
     @objc
     private func nameTextFieldDidChange() {
@@ -517,7 +585,7 @@ final class TrackerCreationViewController: UIViewController {
         let hasName = !(nameTextField.text?
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .isEmpty ?? true)
-
+        
         let hasCategory = selectedCategory != nil
         let hasSchedule = !selectedWeekDays.isEmpty
         let hasEmoji = selectedEmoji != nil
@@ -531,31 +599,120 @@ final class TrackerCreationViewController: UIViewController {
         hasColor
         
         createButton.isEnabled = isEnabled
-        createButton.backgroundColor = isEnabled ? .black : .systemGray3
+        
+        if isEnabled {
+            createButton.backgroundColor = .label
+            createButton.setTitleColor(
+                .systemBackground,
+                for: .normal
+            )
+        } else {
+            createButton.backgroundColor = .trackerGray
+            createButton.setTitleColor(
+                .white,
+                for: .normal
+            )
+        }
     }
     
     private func updateCategorySubtitle() {
-
+        
         guard let text = categorySubtitleLabel.text,
               !text.isEmpty else {
-
+            
             categorySubtitleLabel.isHidden = true
-
+            
             categoryTitleTopConstraint?.isActive = false
             categoryTitleCenterConstraint?.isActive = true
-
+            
             return
         }
-
+        
         categorySubtitleLabel.isHidden = false
-
+        
         categoryTitleCenterConstraint?.isActive = false
         categoryTitleTopConstraint?.isActive = true
     }
-}
-
-extension TrackerCreationViewController: UICollectionViewDelegate {
     
+    private let completedDaysLabel: UILabel = {
+        let label = UILabel()
+        
+        label.font = .systemFont(
+            ofSize: 32,
+            weight: .bold
+        )
+        
+        label.textColor = .label
+        label.textAlignment = .center
+        label.isHidden = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        
+        return label
+    }()
+    
+    private func configureMode() {
+        switch mode {
+        case .create:
+            title = String(localized: "tracker.creation.title")
+            
+            createButton.setTitle(
+                String(localized: "common.save"),
+                for: .normal
+            )
+            
+            completedDaysLabel.isHidden = true
+            
+            nameTextFieldEditTopConstraint?.isActive = false
+            nameTextFieldCreateTopConstraint?.isActive = true
+            
+        case let .edit(
+            tracker,
+            categoryTitle,
+            completedDays):
+            
+            title = String(localized: "tracker.edit.title")
+            
+            createButton.setTitle(
+                "Сохранить",
+                for: .normal
+            )
+            
+            completedDaysLabel.text = daysText(
+                for: completedDays
+            )
+            completedDaysLabel.isHidden = false
+            
+            nameTextFieldCreateTopConstraint?.isActive = false
+            nameTextFieldEditTopConstraint?.isActive = true
+            
+            nameTextField.text = tracker.name
+            selectedEmoji = tracker.emoji
+            selectedColor = tracker.color
+            selectedWeekDays = Set(tracker.schedule)
+            
+            selectedCategory = TrackerCategory(
+                title: categoryTitle,
+                trackers: []
+            )
+            
+            categorySubtitleLabel.text = categoryTitle
+            updateCategorySubtitle()
+            updateScheduleSubtitle()
+            collectionView.reloadData()
+        }
+    }
+    
+    private func daysText(
+        for completedDays: Int
+    ) -> String {
+        let format = String(localized: "tracker.days.count")
+        
+        return String.localizedStringWithFormat(format, completedDays)
+    }
+}
+    
+    extension TrackerCreationViewController: UICollectionViewDelegate {
+        
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath
         ) {
 

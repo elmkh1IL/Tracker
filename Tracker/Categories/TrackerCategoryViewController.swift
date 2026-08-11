@@ -6,11 +6,7 @@ protocol TrackerCategoryViewControllerDelegate: AnyObject {
 
 final class TrackerCategoryViewController: UIViewController {
     
-    // MARK: - Delegate
-    
     weak var delegate: TrackerCategoryViewControllerDelegate?
-    
-    // MARK: - ViewModel
     
     private let store: TrackerCategoryStore
     private let viewModel: TrackerCategoryViewModel
@@ -54,7 +50,7 @@ final class TrackerCategoryViewController: UIViewController {
     
     private func configureAppearance() {
         view.backgroundColor = .systemBackground
-        title = "Категория"
+        title = String(localized: "tracker.category")
         navigationItem.hidesBackButton = true
     }
     
@@ -63,6 +59,8 @@ final class TrackerCategoryViewController: UIViewController {
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.separatorStyle = .none
+        
+        tableView.backgroundColor = .trackerSecondaryBackground
         
         tableView.layer.cornerRadius = 16
         tableView.layer.masksToBounds = true
@@ -78,10 +76,10 @@ final class TrackerCategoryViewController: UIViewController {
     private let addButton: UIButton = {
         let button = UIButton(type: .system)
         
-        button.setTitle("Добавить категорию", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitle(String(localized: "category.add"), for: .normal)
+        button.setTitleColor(.systemBackground, for: .normal)
         
-        button.backgroundColor = .black
+        button.backgroundColor = .label
         button.layer.cornerRadius = 16
         
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -108,7 +106,7 @@ final class TrackerCategoryViewController: UIViewController {
         
         let label = UILabel()
         
-        label.text = "Привычки и события можно\nобъединить по смыслу"
+        label.text = String(localized: "category.placeholder")
         label.numberOfLines = 2
         label.textAlignment = .center
         
@@ -272,21 +270,21 @@ final class TrackerCategoryViewController: UIViewController {
         )
         
         let editAction = UIAlertAction(
-            title: "Редактировать",
+            title: String(localized: "common.edit"),
             style: .default
         ) { [weak self] _ in
             self?.showEditCategory(category)
         }
         
         let deleteAction = UIAlertAction(
-            title: "Удалить",
+            title: String(localized: "common.delete"),
             style: .destructive
         ) { [weak self] _ in
             self?.showDeleteConfirmation(for: category)
         }
         
         let cancelAction = UIAlertAction(
-            title: "Отменить",
+            title: String(localized: "common.cancel"),
             style: .cancel
         )
         
@@ -335,19 +333,19 @@ final class TrackerCategoryViewController: UIViewController {
     private func showDeleteConfirmation(for category: TrackerCategory) {
         let alert = UIAlertController(
             title: nil,
-            message: "Эта категория точно не нужна?",
+            message: String(localized: "category.delete.confirmation"),
             preferredStyle: .actionSheet
         )
         
         let deleteAction = UIAlertAction(
-            title: "Удалить",
+            title: String(localized: "common.delete"),
             style: .destructive
         ) { [weak self] _ in
             self?.viewModel.deleteCategory(category)
         }
         
         let cancelAction = UIAlertAction(
-            title: "Отменить",
+            title: String(localized: "common.cancel"),
             style: .cancel
         )
         
@@ -397,10 +395,7 @@ extension TrackerCategoryViewController: UITableViewDelegate {
         viewModel.selectCategory(at: indexPath.row)
     }
 
-    func tableView(
-        _ tableView: UITableView,
-        heightForRowAt indexPath: IndexPath
-    ) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
 
         75
     }
